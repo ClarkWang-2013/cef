@@ -352,6 +352,12 @@ parser.add_option(
     default=False,
     help='create an ARM binary distribution (Linux only)')
 parser.add_option(
+    '--mips64el-build',
+    action='store_true',
+    dest='mips64elbuild',
+    default=False,
+    help='create an MIPS64 binary distribution (Linux only)')
+parser.add_option(
     '--minimal',
     action='store_true',
     dest='minimal',
@@ -456,6 +462,8 @@ if options.x64build:
   platform_arch = '64'
 elif options.armbuild:
   platform_arch = 'arm'
+elif options.mips64elbuild:
+  platform_arch = '64'
 else:
   platform_arch = '32'
 
@@ -501,6 +509,8 @@ if options.x64build:
   build_dir_suffix = '_GN_x64'
 elif options.armbuild:
   build_dir_suffix = '_GN_arm'
+elif options.mips64elbuild:
+  build_dir_suffix = '_GN_mips64el'
 else:
   build_dir_suffix = '_GN_x86'
 
@@ -692,33 +702,33 @@ if platform == 'windows':
 
   valid_build_dir = None
 
-  if mode == 'standard':
+#  if mode == 'standard':
     # transfer Debug files
-    build_dir = build_dir_debug
-    if not options.allowpartial or path_exists(
-        os.path.join(build_dir, 'libcef.dll')):
-      valid_build_dir = build_dir
-      dst_dir = os.path.join(output_dir, 'Debug')
-      make_dir(dst_dir, options.quiet)
-      copy_files(
-          os.path.join(script_dir, 'distrib/win/*.dll'), dst_dir, options.quiet)
-      for binary in binaries:
-        copy_file(
-            os.path.join(build_dir, binary),
-            os.path.join(dst_dir, os.path.basename(binary)), options.quiet)
-      copy_file(os.path.join(build_dir, libcef_dll_file), os.path.join(dst_dir, 'libcef.lib'), \
-                options.quiet)
-
-      if not options.nosymbols:
-        # create the symbol output directory
-        symbol_output_dir = create_output_dir(
-            output_dir_name + '_debug_symbols', options.outputdir)
-        # transfer contents
-        copy_file(
-            os.path.join(build_dir, 'libcef.dll.pdb'), symbol_output_dir,
-            options.quiet)
-    else:
-      sys.stderr.write("No Debug build files.\n")
+#    build_dir = build_dir_debug
+#    if not options.allowpartial or path_exists(
+#        os.path.join(build_dir, 'libcef.dll')):
+#      valid_build_dir = build_dir
+#      dst_dir = os.path.join(output_dir, 'Debug')
+#      make_dir(dst_dir, options.quiet)
+#      copy_files(
+#          os.path.join(script_dir, 'distrib/win/*.dll'), dst_dir, options.quiet)
+#      for binary in binaries:
+#        copy_file(
+#            os.path.join(build_dir, binary),
+#            os.path.join(dst_dir, os.path.basename(binary)), options.quiet)
+#      copy_file(os.path.join(build_dir, libcef_dll_file), os.path.join(dst_dir, 'libcef.lib'), \
+#                options.quiet)
+#
+#      if not options.nosymbols:
+#        # create the symbol output directory
+#        symbol_output_dir = create_output_dir(
+#            output_dir_name + '_debug_symbols', options.outputdir)
+#        # transfer contents
+#        copy_file(
+#            os.path.join(build_dir, 'libcef.dll.pdb'), symbol_output_dir,
+#            options.quiet)
+#    else:
+#      sys.stderr.write("No Debug build files.\n")
 
   if mode != 'sandbox':
     # transfer Release files
@@ -820,32 +830,32 @@ elif platform == 'macosx':
   valid_build_dir = None
   framework_name = 'Chromium Embedded Framework'
 
-  if mode == 'standard':
-    # transfer Debug files
-    build_dir = build_dir_debug
-    if not options.allowpartial or path_exists(
-        os.path.join(build_dir, 'cefclient.app')):
-      valid_build_dir = build_dir
-      dst_dir = os.path.join(output_dir, 'Debug')
-      make_dir(dst_dir, options.quiet)
-      copy_dir(os.path.join(build_dir, 'cefclient.app/Contents/Frameworks/%s.framework' % framework_name), \
-               os.path.join(dst_dir, '%s.framework' % framework_name), options.quiet)
-      copy_file(
-          os.path.join(script_dir, 'distrib/mac/widevinecdmadapter.plugin'),
-          dst_dir, options.quiet)
-
-      if not options.nosymbols:
-        # create the symbol output directory
-        symbol_output_dir = create_output_dir(
-            output_dir_name + '_debug_symbols', options.outputdir)
-
-        # The real dSYM already exists, just copy it to the output directory.
-        # dSYMs are only generated when is_official_build=true or enable_dsyms=true.
-        # See //build/config/mac/symbols.gni.
-        copy_dir(
-            os.path.join(build_dir, '%s.dSYM' % framework_name),
-            os.path.join(symbol_output_dir, '%s.dSYM' % framework_name),
-            options.quiet)
+#  if mode == 'standard':
+#    # transfer Debug files
+#    build_dir = build_dir_debug
+#    if not options.allowpartial or path_exists(
+#        os.path.join(build_dir, 'cefclient.app')):
+#      valid_build_dir = build_dir
+#      dst_dir = os.path.join(output_dir, 'Debug')
+#      make_dir(dst_dir, options.quiet)
+#      copy_dir(os.path.join(build_dir, 'cefclient.app/Contents/Frameworks/%s.framework' % framework_name), \
+#               os.path.join(dst_dir, '%s.framework' % framework_name), options.quiet)
+#      copy_file(
+#          os.path.join(script_dir, 'distrib/mac/widevinecdmadapter.plugin'),
+#          dst_dir, options.quiet)
+#
+#      if not options.nosymbols:
+#        # create the symbol output directory
+#        symbol_output_dir = create_output_dir(
+#            output_dir_name + '_debug_symbols', options.outputdir)
+#
+#        # The real dSYM already exists, just copy it to the output directory.
+#        # dSYMs are only generated when is_official_build=true or enable_dsyms=true.
+#        # See //build/config/mac/symbols.gni.
+#        copy_dir(
+#            os.path.join(build_dir, '%s.dSYM' % framework_name),
+#            os.path.join(symbol_output_dir, '%s.dSYM' % framework_name),
+#            options.quiet)
 
   # transfer Release files
   build_dir = build_dir_release
@@ -928,27 +938,27 @@ elif platform == 'macosx':
 elif platform == 'linux':
   valid_build_dir = None
 
-  if mode == 'standard':
+#  if mode == 'standard':
     # transfer Debug files
-    build_dir = build_dir_debug
-    libcef_path = os.path.join(build_dir, 'libcef.so')
-    if not options.allowpartial or path_exists(libcef_path):
-      valid_build_dir = build_dir
-      dst_dir = os.path.join(output_dir, 'Debug')
-      make_dir(dst_dir, options.quiet)
-      copy_file(
-          os.path.join(build_dir, 'chrome_sandbox'),
-          os.path.join(dst_dir, 'chrome-sandbox'), options.quiet)
-      copy_file(libcef_path, dst_dir, options.quiet)
-      copy_file(
-          os.path.join(build_dir, 'libwidevinecdmadapter.so'), dst_dir,
-          options.quiet)
-      copy_file(
-          os.path.join(build_dir, 'natives_blob.bin'), dst_dir, options.quiet)
-      copy_file(
-          os.path.join(build_dir, 'snapshot_blob.bin'), dst_dir, options.quiet)
-    else:
-      sys.stderr.write("No Debug build files.\n")
+#    build_dir = build_dir_debug
+#    libcef_path = os.path.join(build_dir, 'libcef.so')
+#    if not options.allowpartial or path_exists(libcef_path):
+#      valid_build_dir = build_dir
+#      dst_dir = os.path.join(output_dir, 'Debug')
+#      make_dir(dst_dir, options.quiet)
+#      copy_file(
+#          os.path.join(build_dir, 'chrome_sandbox'),
+#          os.path.join(dst_dir, 'chrome-sandbox'), options.quiet)
+#      copy_file(libcef_path, dst_dir, options.quiet)
+#      copy_file(
+#          os.path.join(build_dir, 'libwidevinecdmadapter.so'), dst_dir,
+#          options.quiet)
+#      copy_file(
+#          os.path.join(build_dir, 'natives_blob.bin'), dst_dir, options.quiet)
+#      copy_file(
+#          os.path.join(build_dir, 'snapshot_blob.bin'), dst_dir, options.quiet)
+#    else:
+#      sys.stderr.write("No Debug build files.\n")
 
   # transfer Release files
   build_dir = build_dir_release
