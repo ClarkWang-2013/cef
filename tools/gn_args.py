@@ -215,12 +215,22 @@ def GetRecommendedDefaultArgs():
     # x86 or x64 build: $ gclient runhooks
     result['use_sysroot'] = False
 
+    # Currently,tcmalloc not support on mips.
+    result['use_allocator'] = "none"
+
+    result['google_api_key'] = "AIzaSyDxKL42zsPjbke5O8_rPVpVrLrJ8aeE9rQ"
+    result['google_default_client_id'] = \
+    "595013732528-llk8trb03f0ldpqq6nprjp1s79596646.apps.googleusercontent.com"
+    result['google_default_client_secret'] = "5ntt6GbbkjnTVXx-MSxbmx5e"
+    result['fatal_linker_warnings'] = False
+    result['use_cups'] = True
+
     result['clang_use_chrome_plugins'] = False
     #result['enable_background'] = False
     #result['enable_extensions'] = False
     result['enable_nacl_nonsfi'] = False
     result['enable_google_now'] = False
-    result['enable_hangout_services_extension'] = False
+    result['enable_hangout_services_extension'] = True
     result['enable_hotwording'] = False
     result['enable_iterator_debugging'] = False
     #result['enable_one_click_signin'] = False
@@ -244,10 +254,10 @@ def GetRecommendedDefaultArgs():
     #result['safe_browsing_mode'] = 0
     result['symbol_level'] = 0
     result['treat_warnings_as_errors'] = False
-    result['use_gconf'] = True
+    result['use_gconf'] = False
     result['use_gio'] = True
     result['use_gnome_keyring'] = False
-    result['use_gold'] = True
+    result['use_gold'] = False
     result['use_kerberos'] = False
     result['use_ozone'] = False
     result['use_pulseaudio'] = True
