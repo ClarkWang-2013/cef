@@ -160,13 +160,13 @@ def GetChromiumDefaultArgs():
   defaults = {
       'dcheck_always_on': False,
       'is_asan': False,
-      'is_debug': True,
+      'is_debug': False,
       'is_official_build': False,
-      'target_cpu': 'x64',
+      'target_cpu': 'mips64el',
   }
 
   if platform == 'linux':
-    defaults['use_sysroot'] = True
+    defaults['use_sysroot'] = False
 
   if platform == 'windows':
     defaults['is_win_fastlink'] = False
@@ -300,7 +300,7 @@ def ValidateArgs(args):
   elif platform == 'windows':
     assert target_cpu in ('x86', 'x64'), 'target_cpu must be "x86" or "x64"'
   elif platform == 'linux':
-    assert target_cpu in ('x86', 'x64',
+    assert target_cpu in ('x86', 'x64', 'mips64el',
                           'arm'), 'target_cpu must be "x86", "x64" or "arm"'
 
   if platform == 'linux':
@@ -453,6 +453,8 @@ def LinuxSysrootExists(cpu):
     sysroot_name = 'debian_jessie_i386-sysroot'
   elif cpu == 'x64':
     sysroot_name = 'debian_jessie_amd64-sysroot'
+  elif cpu == 'mips64el':
+    sysroot_name = 'debian_jessie_mips64el-sysroot'
   elif cpu == 'arm':
     sysroot_name = 'debian_jessie_arm-sysroot'
   else:
@@ -470,7 +472,7 @@ def GetAllPlatformConfigs(build_args):
   # Merged args without validation.
   args = GetMergedArgs(build_args)
 
-  create_debug = True
+  create_debug = False
 
   # Don't create debug directories for asan builds.
   if GetArgValue(args, 'is_asan'):
@@ -483,14 +485,14 @@ def GetAllPlatformConfigs(build_args):
     use_sysroot = GetArgValue(args, 'use_sysroot')
     if use_sysroot:
       # Only generate configurations for sysroots that have been installed.
-      for cpu in ('x86', 'x64', 'arm'):
+      for cpu in ('x86', 'x64', 'mips64el', 'arm'):
         if LinuxSysrootExists(cpu):
           supported_cpus.append(cpu)
         else:
           msg('Not generating %s configuration due to missing sysroot directory'
               % cpu)
     else:
-      supported_cpus = ['x64']
+      supported_cpus = ['mips64el']
   elif platform == 'windows':
     supported_cpus = ['x86', 'x64']
   elif platform == 'macosx':
