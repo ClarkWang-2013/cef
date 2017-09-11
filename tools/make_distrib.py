@@ -468,7 +468,8 @@ else:
   platform_arch = '32'
 
 # output directory
-output_dir_base = 'cef_binary_' + cef_ver
+# Modify for build rpm.
+output_dir_base = 'cef_binary'
 
 if options.distribsubdir == '':
   output_dir_name = output_dir_base + '_' + platform + platform_arch
